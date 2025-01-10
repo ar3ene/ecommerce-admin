@@ -33,8 +33,8 @@ const formSchema = z.object({
   images: z.object({ url: z.string() }).array(),
   price: z.coerce.number().min(1),
   categoryId: z.string().min(1),
-  colorId: z.string().min(1),
-  sizeId: z.string().min(1),
+  colorId: z.string().min(1).optional(),
+  sizeId: z.string().min(1).optional(),
   isFeatured: z.boolean().default(false).optional(),
   isArchived: z.boolean().default(false).optional()
 });
@@ -75,8 +75,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     images: [],
     price: 0,
     categoryId: '',
-    colorId: '',
-    sizeId: '',
+    colorId: undefined,
+    sizeId: undefined,
     isFeatured: false,
     isArchived: false,
   }
@@ -89,11 +89,19 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   const onSubmit = async (data: ProductFormValues) => {
     try {
       setLoading(true);
+      // 清理数据
+      const submitData = {
+        ...data,
+        colorId: data.colorId || undefined,
+        sizeId: data.sizeId || undefined
+      };
+
       if (initialData) {
-        await axios.patch(`/api/${params.storeId}/products/${params.productId}`, data);
+        await axios.patch(`/api/${params.storeId}/products/${params.productId}`, submitData);
       } else {
-        await axios.post(`/api/${params.storeId}/products`, data);
+        await axios.post(`/api/${params.storeId}/products`, submitData);
       }
+
       router.refresh();
       router.push(`/${params.storeId}/products`);
       toast.success(toastMessage);

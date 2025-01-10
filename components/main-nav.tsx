@@ -15,42 +15,48 @@ export function MainNav({
   const routes = [
     {
       href: `/${params.storeId}`,
-      label: 'Overview',
+      // label: 'Overview',
+      label: '首页',
       active: pathname === `/${params.storeId}`,
     },
     {
       href: `/${params.storeId}/billboards`,
-      label: 'Billboards',
+      // label: 'Billboards',
+      label: '公告板',
       active: pathname === `/${params.storeId}/billboards`,
     },
     {
       href: `/${params.storeId}/categories`,
-      label: 'Categories',
+      // label: 'Categories',
+      label: '品类',
       active: pathname === `/${params.storeId}/categories`,
     },
-    {
-      href: `/${params.storeId}/sizes`,
-      label: 'Sizes',
-      active: pathname === `/${params.storeId}/sizes`,
-    },
-    {
-      href: `/${params.storeId}/colors`,
-      label: 'Colors',
-      active: pathname === `/${params.storeId}/colors`,
-    },
+    // {
+    //   href: `/${params.storeId}/sizes`,
+    //   label: 'Sizes',
+    //   active: pathname === `/${params.storeId}/sizes`,
+    // },
+    // {
+    //   href: `/${params.storeId}/colors`,
+    //   label: 'Colors',
+    //   active: pathname === `/${params.storeId}/colors`,
+    // },
     {
       href: `/${params.storeId}/products`,
-      label: 'Products',
+      // label: 'Products',
+      label: '产品',
       active: pathname === `/${params.storeId}/products`,
     },
     {
       href: `/${params.storeId}/orders`,
-      label: 'Orders',
+      // label: 'Orders',
+      label: '订单',
       active: pathname === `/${params.storeId}/orders`,
     },
     {
       href: `/${params.storeId}/settings`,
-      label: 'Settings',
+      // label: 'Settings',
+      label: '设置',
       active: pathname === `/${params.storeId}/settings`,
     },
   ]
