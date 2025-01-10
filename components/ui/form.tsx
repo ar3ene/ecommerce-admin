@@ -90,6 +90,10 @@ const FormLabel = React.forwardRef<
 >(({ className, ...props }, ref) => {
   const { error, formItemId } = useFormField()
 
+  // if (!props.htmlFor && formItemId) {
+  //   props.htmlFor = formItemId
+  // }
+
   return (
     <Label
       ref={ref}
