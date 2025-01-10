@@ -11,7 +11,9 @@ export default async function DashboardLayout({
   children: React.ReactNode
   params: { storeId: string }
 }) {
-  const { userId } = auth();
+  // const { userId } = auth();
+  const session = await auth();
+  const userId = session?.userId;
 
   if (!userId) {
     redirect('/sign-in');
@@ -30,7 +32,7 @@ export default async function DashboardLayout({
 
   return (
     <>
-      <Navbar />
+      <Navbar /> 
       {children}
     </>
   );

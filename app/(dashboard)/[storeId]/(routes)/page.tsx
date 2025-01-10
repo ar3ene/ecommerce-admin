@@ -10,19 +10,32 @@ import { getGraphRevenue } from "@/actions/get-graph-revenue";
 import { getStockCount } from "@/actions/get-stock-count";
 import { formatter } from "@/lib/utils";
 
-interface DashboardPageProps {
-  params: {
-    storeId: string;
-  };
-};
+// interface DashboardPageProps {
+//   params: {
+//     storeId: string;
+//   };
+// };
 
-const DashboardPage: React.FC<DashboardPageProps> = async ({ 
+// const DashboardPage: React.FC<DashboardPageProps> = async ({ 
+//   params
+// }) => {
+//   const totalRevenue = await getTotalRevenue(params.storeId);
+//   const graphRevenue = await getGraphRevenue(params.storeId);
+//   const salesCount = await getSalesCount(params.storeId);
+//   const stockCount = await getStockCount(params.storeId);
+export default async function DashboardPage({
   params
-}) => {
-  const totalRevenue = await getTotalRevenue(params.storeId);
-  const graphRevenue = await getGraphRevenue(params.storeId);
-  const salesCount = await getSalesCount(params.storeId);
-  const stockCount = await getStockCount(params.storeId);
+}: {
+  params: { storeId: string }
+}) {
+  const storeId = await params.storeId;
+  
+  const [totalRevenue, graphRevenue, salesCount, stockCount] = await Promise.all([
+    getTotalRevenue(storeId),
+    getGraphRevenue(storeId),
+    getSalesCount(storeId),
+    getStockCount(storeId)
+  ]);
 
   return (
     <div className="flex-col">
@@ -73,4 +86,4 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({
   );
 };
 
-export default DashboardPage;
+// export default DashboardPage;
