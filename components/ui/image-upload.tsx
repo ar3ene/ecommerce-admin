@@ -27,7 +27,12 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   }, []);
 
   const onUpload = (result: any) => {
-    onChange(result.info.secure_url);
+    console.log('Upload result:', result);
+    if (result.info?.secure_url) {
+      onChange(result.info.secure_url);
+    } else {
+      console.error('No secure_url in upload result');
+    }
   };
 
   if (!isMounted) {
@@ -53,7 +58,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           </div>
         ))}
       </div>
-      <CldUploadWidget onUpload={onUpload} uploadPreset="t4drjppf">
+      <CldUploadWidget onSuccess={onUpload} uploadPreset="njhlaebb">
         {({ open }) => {
           const onClick = () => {
             open();

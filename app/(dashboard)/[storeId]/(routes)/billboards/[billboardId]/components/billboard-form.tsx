@@ -61,6 +61,8 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
   const onSubmit = async (data: BillboardFormValues) => {
     try {
       setLoading(true);
+      console.log('Form data:', data); // 添加日志
+
       if (initialData) {
         await axios.patch(`/api/${params.storeId}/billboards/${params.billboardId}`, data);
       } else {
@@ -70,6 +72,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
       router.push(`/${params.storeId}/billboards`);
       toast.success(toastMessage);
     } catch (error: any) {
+      console.error('Submit error:', error); // 添加错误日志
       toast.error('Something went wrong.');
     } finally {
       setLoading(false);
@@ -125,7 +128,17 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
                     <ImageUpload 
                       value={field.value ? [field.value] : []} 
                       disabled={loading} 
-                      onChange={(url) => field.onChange(url)}
+                      onChange={(url) => {
+                      //   console.log('Image URL:', url);
+                      //   field.onChange(url);
+                      // }}
+                      // 确保 url 存在且非空
+                        if (url && url.trim()) {
+                          field.onChange(url);
+                          // 可以添加成功提示
+                          toast.success('Image uploaded successfully');
+                        }
+                      }}
                       onRemove={() => field.onChange('')}
                     />
                   </FormControl>
