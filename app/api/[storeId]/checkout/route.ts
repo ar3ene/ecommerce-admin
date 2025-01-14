@@ -10,24 +10,32 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
+interface OrderItem {
+  productId: string;
+  quantity: number;
+}
+
 export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }
 
+// app/api/[storeId]/checkout/route.ts
 export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
-  const { productIds } = await req.json();
+  // Change the request body type
+  const { items }: { items: OrderItem[] } = await req.json();
+  // items should be an array of { productId: string, quantity: number }
 
-  if (!productIds || productIds.length === 0) {
-    return new NextResponse("Product ids are required", { status: 400 });
+  if (!items || items.length === 0) {
+    return new NextResponse("Items are required", { status: 400 });
   }
 
   const products = await prismadb.product.findMany({
     where: {
       id: {
-        in: productIds
+        in: items.map(item => item.productId)
       }
     }
   });
@@ -35,10 +43,11 @@ export async function POST(
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
   products.forEach((product) => {
+    const orderItem = items.find(item => item.productId === product.id);
     line_items.push({
-      quantity: 1,
+      quantity: orderItem?.quantity || 1,
       price_data: {
-        currency: 'USD',
+        currency: 'JPY',
         product_data: {
           name: product.name,
         },
@@ -52,16 +61,65 @@ export async function POST(
       storeId: params.storeId,
       isPaid: false,
       orderItems: {
-        create: productIds.map((productId: string) => ({
+        create: items.map((item) => ({
           product: {
             connect: {
-              id: productId
+              id: item.productId
             }
-          }
+          },
+          quantity: item.quantity
         }))
       }
     }
   });
+// export async function POST(
+//   req: Request,
+//   { params }: { params: { storeId: string } }
+// ) {
+//   const { productIds } = await req.json();
+
+//   if (!productIds || productIds.length === 0) {
+//     return new NextResponse("Product ids are required", { status: 400 });
+//   }
+
+//   const products = await prismadb.product.findMany({
+//     where: {
+//       id: {
+//         in: productIds
+//       }
+//     }
+//   });
+
+//   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
+
+//   products.forEach((product) => {
+//     line_items.push({
+//       quantity: 1,
+//       price_data: {
+//         currency: 'USD',
+//         product_data: {
+//           name: product.name,
+//         },
+//         unit_amount: product.price.toNumber() * 100
+//       }
+//     });
+//   });
+
+//   const order = await prismadb.order.create({
+//     data: {
+//       storeId: params.storeId,
+//       isPaid: false,
+//       orderItems: {
+//         create: productIds.map((productId: string) => ({
+//           product: {
+//             connect: {
+//               id: productId
+//             }
+//           }
+//         }))
+//       }
+//     }
+//   });
 
   const session = await stripe.checkout.sessions.create({
     line_items,
