@@ -46,9 +46,10 @@ export default async function DashboardPage({
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Revenue
+                {/* Total Revenue */}
+                总营收
               </CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              {/* <DollarSign className="h-4 w-4 text-muted-foreground" /> */}
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{formatter.format(totalRevenue)}</div>
@@ -56,7 +57,7 @@ export default async function DashboardPage({
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Sales</CardTitle>
+              <CardTitle className="text-sm font-medium">销量</CardTitle>
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -65,7 +66,7 @@ export default async function DashboardPage({
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Products In Stock</CardTitle>
+              <CardTitle className="text-sm font-medium">在售商品</CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
