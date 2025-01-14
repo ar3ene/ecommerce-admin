@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { Trash } from "lucide-react"
-import { Category, Color, Image, Product, Size } from "@prisma/client"
+import { Category, Image, Product } from "@prisma/client"
 import { useParams, useRouter } from "next/navigation"
 
 import { Input } from "@/components/ui/input"
@@ -30,11 +30,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 const formSchema = z.object({
   name: z.string().min(1),
+  description: z.string().max(500), // Add this
   images: z.object({ url: z.string() }).array(),
   price: z.coerce.number().min(1),
   categoryId: z.string().min(1),
-  colorId: z.string().min(1).optional(),
-  sizeId: z.string().min(1).optional(),
+  // colorId: z.string().min(1).optional(),
+  // sizeId: z.string().min(1).optional(),
   isFeatured: z.boolean().default(false).optional(),
   isArchived: z.boolean().default(false).optional()
 });
@@ -46,15 +47,15 @@ interface ProductFormProps {
     images: Image[]
   } | null;
   categories: Category[];
-  colors: Color[];
-  sizes: Size[];
+  // colors: Color[];
+  // sizes: Size[];
 };
 
 export const ProductForm: React.FC<ProductFormProps> = ({
   initialData,
   categories,
-  sizes,
-  colors
+  // sizes,
+  // colors
 }) => {
   const params = useParams();
   const router = useRouter();
@@ -72,11 +73,12 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     price: parseFloat(String(initialData?.price)),
   } : {
     name: '',
+    description: '', // Add this
     images: [],
     price: 0,
     categoryId: '',
-    colorId: undefined,
-    sizeId: undefined,
+    // colorId: undefined,
+    // sizeId: undefined,
     isFeatured: false,
     isArchived: false,
   }
@@ -92,8 +94,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       // 清理数据
       const submitData = {
         ...data,
-        colorId: data.colorId || undefined,
-        sizeId: data.sizeId || undefined
+        // colorId: data.colorId || undefined,
+        // sizeId: data.sizeId || undefined
       };
 
       if (initialData) {
@@ -220,6 +222,24 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             />
             <FormField
               control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <textarea 
+                      disabled={loading} 
+                      placeholder="Product description" 
+                      className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* <FormField
+              control={form.control}
               name="sizeId"
               render={({ field }) => (
                 <FormItem>
@@ -261,7 +281,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="isFeatured"
