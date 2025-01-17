@@ -19,10 +19,13 @@ export async function GET(
       include: {
         images: true,
         category: true,
-        // size: true,
-        // color: true,
       }
     });
+
+    const formattedProduct = {
+      ...product,
+      price: product.price.toString() // Convert Decimal to String
+    };
   
     return NextResponse.json(product);
   } catch (error) {
