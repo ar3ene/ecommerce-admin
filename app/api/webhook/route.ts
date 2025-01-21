@@ -2,6 +2,8 @@ import Stripe from "stripe"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 
+import { getExchangeRates, convertCurrency, CurrencyType } from "@/lib/currency";
+
 import { stripe } from "@/lib/stripe"
 import prismadb from "@/lib/prismadb"
 
@@ -37,6 +39,17 @@ export async function POST(req: Request) {
 
 
   if (event.type === "checkout.session.completed") {
+      
+    const currency = session.currency.toUpperCase() as CurrencyType;
+    const paidAmount = session.amount_total!;
+    
+    const rates = await getExchangeRates(currency);
+    const amountInCNY = convertCurrency(
+      currency === "JPY" ? paidAmount : paidAmount / 100,
+      currency,
+      "CNY",
+      rates.rates
+    );
     const order = await prismadb.order.update({
       where: {
         id: session?.metadata?.orderId,
@@ -45,6 +58,9 @@ export async function POST(req: Request) {
         isPaid: true,
         address: addressString,
         phone: session?.customer_details?.phone || '',
+        amount: amountInCNY,
+        paidAmount: paidAmount,
+        paidCurrency: currency
       },
       include: {
         orderItems: true,

@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
+import { CurrencyType, getExchangeRates, convertCurrency } from "@/lib/currency";
 
 import { stripe } from "@/lib/stripe";
 import prismadb from "@/lib/prismadb";
@@ -24,13 +25,15 @@ export async function POST(
   req: Request,
   { params }: { params: { storeId: string } }
 ) {
-  // Change the request body type
-  const { items }: { items: OrderItem[] } = await req.json();
-  // items should be an array of { productId: string, quantity: number }
+  
+  const { items, currency = "CNY"}: { items: OrderItem[], currency: CurrencyType} = await req.json();
+  
 
   if (!items || items.length === 0) {
     return new NextResponse("Items are required", { status: 400 });
   }
+
+  const rates = await getExchangeRates("CNY");
 
   const products = await prismadb.product.findMany({
     where: {
@@ -44,15 +47,25 @@ export async function POST(
 
   products.forEach((product) => {
     const orderItem = items.find(item => item.productId === product.id);
+    
+    const priceInCNY = product.price.toNumber();
+    const priceInTargetCurrency = convertCurrency(
+      priceInCNY,
+      "CNY",
+      currency as CurrencyType,
+      rates.rates
+    );
+
     line_items.push({
       quantity: orderItem?.quantity || 1,
       price_data: {
-        currency: 'JPY',
+        currency: currency.toLowerCase(),
         product_data: {
           name: product.name,
         },
-        // unit_amount: product.price.toNumber() * 100,
-        unit_amount: product.price.toNumber(), // JPY is a zero-decimal currency
+        unit_amount: Math.round(
+          currency === "JPY" ? priceInTargetCurrency : priceInTargetCurrency * 100
+        ),
       }
     });
   });
@@ -61,6 +74,7 @@ export async function POST(
     data: {
       storeId: params.storeId,
       isPaid: false,
+      orderCurrency: currency,
       orderItems: {
         create: items.map((item) => ({
           product: {
@@ -84,7 +98,8 @@ export async function POST(
     success_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1`,
     cancel_url: `${process.env.FRONTEND_STORE_URL}/cart?canceled=1`,
     metadata: {
-      orderId: order.id
+      orderId: order.id,
+      currency: currency
     },
   });
 

@@ -8,7 +8,7 @@ import { getTotalRevenue } from "@/actions/get-total-revenue";
 import { getSalesCount } from "@/actions/get-sales-count";
 import { getGraphRevenue } from "@/actions/get-graph-revenue";
 import { getStockCount } from "@/actions/get-stock-count";
-import { formatter } from "@/lib/utils";
+import { formatters } from "@/lib/utils";
 
 // interface DashboardPageProps {
 //   params: {
@@ -52,7 +52,7 @@ export default async function DashboardPage({
               {/* <DollarSign className="h-4 w-4 text-muted-foreground" /> */}
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatter.format(totalRevenue)}</div>
+              <div className="text-2xl font-bold">{formatters.CNY.format(totalRevenue)}</div>
             </CardContent>
           </Card>
           <Card>

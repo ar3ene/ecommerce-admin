@@ -69,15 +69,19 @@ model Product {
 }
 
 model Order {
-  id         String      @id @default(uuid())
-  storeId    String
-  isPaid     Boolean     @default(false)
-  phone      String      @default("")
-  address    String      @default("")
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  store      Store       @relation("StoreToOrder", fields: [storeId], references: [id])
-  orderItems OrderItem[]
+  id            String      @id @default(uuid())
+  storeId       String
+  isPaid        Boolean     @default(false)
+  phone         String      @default("")
+  address       String      @default("")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  store         Store       @relation("StoreToOrder", fields: [storeId], references: [id])
+  orderItems    OrderItem[]
+  amount        Decimal     @default(0) // 存储CNY金额
+  paidAmount    Decimal?    // 存储实际支付金额
+  paidCurrency  String?     // 存储支付货币
+  orderCurrency String      @default("CNY") // 订单创建时的货币
 
   @@index([storeId])
 }

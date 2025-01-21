@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 
 import prismadb from "@/lib/prismadb";
-import { formatter } from "@/lib/utils";
+import { formatters } from "@/lib/utils";
 
 import { OrderColumn } from "./components/columns"
 import { OrderClient } from "./components/client";
@@ -35,10 +35,16 @@ const OrdersPage = async ({
     products: item.orderItems.map((orderItem) => 
       `${orderItem.product.name} (x${orderItem.quantity})`
     ).join(', '),
+    amount: formatters.CNY.format(item.amount.toNumber()),
+    paidAmount: item.paidAmount ? 
+      formatters[item.paidCurrency as keyof typeof formatters].format(item.paidAmount.toNumber()) : 
+      "-",
+    paidCurrency: item.paidCurrency || "-",
+    orderCurrency: item.orderCurrency,
     quantity: item.orderItems.reduce((total, orderItem) => {
       return total + orderItem.quantity
     }, 0),
-    totalPrice: formatter.format(item.orderItems.reduce((total, orderItem) => {
+    totalPrice: formatters.CNY.format(item.orderItems.reduce((total, orderItem) => {
       return total + (orderItem.product.price.toNumber() * orderItem.quantity)
     }, 0)),
     isPaid: item.isPaid,
