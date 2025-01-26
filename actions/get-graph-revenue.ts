@@ -25,14 +25,15 @@ export const getGraphRevenue = async (storeId: string): Promise<GraphData[]> => 
   // Grouping the orders by month and summing the revenue
   for (const order of paidOrders) {
     const month = order.createdAt.getMonth(); // 0 for Jan, 1 for Feb, ...
-    let revenueForOrder = 0;
+    const revenue = Number(order.amount);
+    // let revenueForOrder = 0;
 
-    for (const item of order.orderItems) {
-      revenueForOrder += item.product.price.toNumber();
-    }
+    // for (const item of order.orderItems) {
+    //   revenueForOrder += item.product.price.toNumber();
+    // }
 
     // Adding the revenue for this order to the respective month
-    monthlyRevenue[month] = (monthlyRevenue[month] || 0) + revenueForOrder;
+    monthlyRevenue[month] = (monthlyRevenue[month] || 0) + revenue;
   }
 
   // Converting the grouped data into the format expected by the graph

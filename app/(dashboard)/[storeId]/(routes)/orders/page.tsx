@@ -37,7 +37,12 @@ const OrdersPage = async ({
     ).join(', '),
     amount: formatters.CNY.format(Number(item.amount)),
     paidAmount: item.paidAmount ? 
-      formatters[item.paidCurrency as keyof typeof formatters].format(Number(item.paidAmount)) : 
+      formatters[item.paidCurrency as keyof typeof formatters].format
+      (
+        ["JPY", "KRW"].includes(item.paidCurrency || "") 
+          ? Number(item.paidAmount)
+          : Number(item.paidAmount) / 100
+      ) : 
       "-",
     paidCurrency: item.paidCurrency || "-",
     orderCurrency: item.orderCurrency,

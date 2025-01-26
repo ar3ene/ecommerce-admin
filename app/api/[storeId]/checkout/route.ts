@@ -64,7 +64,9 @@ export async function POST(
           name: product.name,
         },
         unit_amount: Math.round(
-          currency === "JPY" ? priceInTargetCurrency : priceInTargetCurrency * 100
+          ["jpy", "krw"].includes(currency.toLowerCase()) 
+            ? priceInTargetCurrency 
+            : priceInTargetCurrency * 100
         ),
       }
     });
