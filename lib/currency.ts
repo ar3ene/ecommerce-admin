@@ -3,9 +3,11 @@ import { formatter } from "./utils";
 export type CurrencyType = "CNY" | "USD" | "EUR" | "JPY" | "HKD";
 
 interface ExchangeRateResponse {
-  rates: {
-    [key: string]: number;
-  };
+    base: string;
+    date: string;
+    rates: {
+      [key in Uppercase<CurrencyType>]: number;  
+    };
 }
 
 export async function getExchangeRates(base: CurrencyType = "CNY"): Promise<ExchangeRateResponse> {
@@ -28,7 +30,18 @@ export async function getExchangeRates(base: CurrencyType = "CNY"): Promise<Exch
         throw new Error(`Failed to fetch exchange rates: ${response.statusText}`);
     }
     
-    return response.json();
+    // return response.json();
+    const data = await response.json();
+
+    if (data.conversion_rates) {  // API 返回的是 conversion_rates 而不是 rates
+        data.rates = data.conversion_rates;
+    }
+
+    return {
+        base: data.base_code || base, // 添加 fallback
+        date: data.time_last_update_utc || new Date().toISOString(),
+        rates: data.rates || {}
+    };
 }
 
 export function convertCurrency(
@@ -37,15 +50,31 @@ export function convertCurrency(
     toCurrency: CurrencyType,
     rates: { [key: string]: number }
 ): number {
-  if (fromCurrency === toCurrency) return amount;
+    if (!rates || typeof rates !== 'object') {
+        throw new Error('Invalid rates object');
+    }
+
+    if (fromCurrency === toCurrency) return amount;
+
+    const targetCurrency = toCurrency.toUpperCase();
+    const rate = rates[targetCurrency];
+
+    if (rate === undefined) {
+        console.error('Available rates:', Object.keys(rates));
+        throw new Error(`Exchange rate not found for ${targetCurrency}`);
+    }
+    
+    return amount * rate;
+
   
-  const rate = rates[toCurrency];
+    //   const targetCurrency = toCurrency.toUpperCase();
+    //   const rate = rates[targetCurrency];
 
-  if (!rate) {
-    throw new Error(`Exchange rate not found for ${toCurrency}`);
-  }
+    //   if (!rate) {
+    //     throw new Error(`Exchange rate not found for ${toCurrency}`);
+    //   }
 
-  return amount * rate;
+    //   return amount * rate;
 }
 
 export function formatPrice(amount: number, currency: CurrencyType): string {

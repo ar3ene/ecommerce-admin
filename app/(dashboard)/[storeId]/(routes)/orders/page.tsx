@@ -35,18 +35,18 @@ const OrdersPage = async ({
     products: item.orderItems.map((orderItem) => 
       `${orderItem.product.name} (x${orderItem.quantity})`
     ).join(', '),
-    amount: formatters.CNY.format(item.amount.toNumber()),
+    amount: formatters.CNY.format(Number(item.amount)),
     paidAmount: item.paidAmount ? 
-      formatters[item.paidCurrency as keyof typeof formatters].format(item.paidAmount.toNumber()) : 
+      formatters[item.paidCurrency as keyof typeof formatters].format(Number(item.paidAmount)) : 
       "-",
     paidCurrency: item.paidCurrency || "-",
     orderCurrency: item.orderCurrency,
     quantity: item.orderItems.reduce((total, orderItem) => {
       return total + orderItem.quantity
     }, 0),
-    totalPrice: formatters.CNY.format(item.orderItems.reduce((total, orderItem) => {
-      return total + (orderItem.product.price.toNumber() * orderItem.quantity)
-    }, 0)),
+    // totalPrice: formatters.CNY.format(item.orderItems.reduce((total, orderItem) => {
+    //   return total + (orderItem.product.price.toNumber() * orderItem.quantity)
+    // }, 0)),
     isPaid: item.isPaid,
     createdAt: format(item.createdAt, 'MMMM do, yyyy'),
   }));
