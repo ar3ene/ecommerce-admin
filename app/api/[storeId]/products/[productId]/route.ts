@@ -22,12 +22,16 @@ export async function GET(
       }
     });
 
+    if (!product) {
+      return new NextResponse("Product not found", { status: 404 });
+    }
+
     const formattedProduct = {
       ...product,
       price: product.price.toString() // Convert Decimal to String
     };
   
-    return NextResponse.json(product);
+    return NextResponse.json(formattedProduct);
   } catch (error) {
     console.log('[PRODUCT_GET]', error);
     return new NextResponse("Internal error", { status: 500 });
