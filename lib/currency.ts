@@ -1,4 +1,4 @@
-import { formatter } from "./utils";
+import { formatters } from "./utils";
 
 export type CurrencyType = "CNY" | "USD" | "EUR" | "JPY" | "HKD";
 
@@ -66,17 +66,8 @@ export function convertCurrency(
     
     return amount * rate;
 
-  
-    //   const targetCurrency = toCurrency.toUpperCase();
-    //   const rate = rates[targetCurrency];
-
-    //   if (!rate) {
-    //     throw new Error(`Exchange rate not found for ${toCurrency}`);
-    //   }
-
-    //   return amount * rate;
 }
 
 export function formatPrice(amount: number, currency: CurrencyType): string {
-  return formatter[currency].format(amount);
+  return formatters[currency].format(amount);
 }
