@@ -12,7 +12,7 @@ export type OrderColumn = {
   orderCurrency: string;
   isPaid: boolean;
   quantity: number;
-  totalPrice: string;
+  totalPrice?: string;
   products: string;
   createdAt: string;
 }
