@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 
   if (event.type === "checkout.session.completed") {
       
-    const currency = session.currency.toUpperCase() as CurrencyType;
+    const currency = (session.currency ?? "CNY").toUpperCase() as CurrencyType;
     const paidAmount = session.amount_total!;
     
     const rates = await getExchangeRates(currency);
@@ -68,17 +68,6 @@ export async function POST(req: Request) {
     });
 
     const productIds = order.orderItems.map((orderItem) => orderItem.productId);
-
-    // await prismadb.product.updateMany({
-    //   where: {
-    //     id: {
-    //       in: [...productIds],
-    //     },
-    //   },
-    //   data: {
-    //     isArchived: true
-    //   }
-    // });
   }
 
   return new NextResponse(null, { status: 200 });
